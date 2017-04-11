@@ -104,6 +104,11 @@ public class ZAPIGetJson extends BaseApiHandler {
             if (RedisProccess.getInstance().setListUserID(msgID, jsMsg.userID) == false) {
                 return null;
             }
+
+            if (RedisProccess.getInstance().countTotalRequest(msgID, jsMsg.userID) == false) {
+                return null;
+            }
+            
             //return json
             return "{result:1,code:0,msg:\"abcdef\"}";
 

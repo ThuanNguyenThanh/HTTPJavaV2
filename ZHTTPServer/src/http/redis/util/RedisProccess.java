@@ -54,32 +54,40 @@ public class RedisProccess implements RedisInterface {
 
         return true;
     }
-    
+
     //public boolean countTotalRequest()
-    //list userid
+    //list userid: zrange ns:listuserid 0 -1
     public boolean setListUserID(Long msgID, Long userID) {
-        if(msgID == null || userID == null)
+        if (msgID == null || userID == null) {
             return false;
-        
-        if(RedisUtil.setZStringValue("ns:listuserid", (double)msgID, userID.toString()) == null)
+        }
+
+        if (RedisUtil.setZStringValue("ns:listuserid", (double) msgID, userID.toString()) == null) {
             return false;
+        }
         System.out.println("setListUserID");
         return true;
     }
-    
-//    public String getMsgID(Long userID) {
-//        if (userID == 0) {
-//            return "";
-//        }
-//
-//        Long msgCounter = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
-//
-//        if (msgCounter == null) {
-//            return "";
-//        }
-//
-//        return userID.toString() + msgCounter;
-//    }
+
+    public boolean countTotalRequest(Long msgID, Long userID) {
+        if (msgID == null) {
+            return false;
+        }
+
+        if (RedisUtil.Increase(ZMsgDefine.TOTAL_REQUEST) == null) {
+            return false;
+        }
+
+        if (RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT) == 1) {
+            if (RedisUtil.Increase(ZMsgDefine.TOTAL_REQUEST_SUCCESS) == null) {
+                return false;
+            }
+        } else if (RedisUtil.Increase(ZMsgDefine.TOTAL_REQUEST_FAIL) == null) {
+            return false;
+        }
+        
+        return true;
+    }
 
     @Override
     public boolean SetMsgIDInfo(String MsgID, String Field, String Value) {
