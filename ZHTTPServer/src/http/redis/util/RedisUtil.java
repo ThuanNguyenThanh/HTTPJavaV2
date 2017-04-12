@@ -149,13 +149,39 @@ public class RedisUtil {
         }
     }
 
-    public static String getZStringValue(String hash, String key) {
+    public static Double getZDoubleValue(String key, String member) {
         try {
-            if (hash.isEmpty() || key.isEmpty()) {
+            if (key.isEmpty() || member.isEmpty()) {
                 return null;
             }
 
-            return getRdsStringCmdIns().hget(hash, key);
+            return getRdsStringCmdIns().zscore(key, member);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Long getZCardValue(String key) {
+        try {
+            if (key.isEmpty()) {
+                return null;
+            }
+
+            return getRdsStringCmdIns().zcard(key);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static List getZrange(String key) {
+        try {
+            if (key.isEmpty()) {
+                return null;
+            }
+
+            return getRdsStringCmdIns().zrange(key, 0, -1);
 
         } catch (Exception e) {
             return null;

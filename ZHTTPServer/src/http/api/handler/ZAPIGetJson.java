@@ -40,7 +40,7 @@ public class ZAPIGetJson extends BaseApiHandler {
     public String doAction(HttpServletRequest req) {
         try {
             Timestamp timeStart = new Timestamp(System.currentTimeMillis());
-            System.out.println("Time start: " + timeStart.getTime());
+            System.out.println("----------------New connection--------------- \nTime start: " + timeStart.getTime());
 
             if (req.getMethod().compareToIgnoreCase("POST") != 0) {
                 return "{result:0,code:405,msg:\"Wrong method. Must be POST\"}";
@@ -62,14 +62,15 @@ public class ZAPIGetJson extends BaseApiHandler {
             JSMessageExample jsMsg = GsonUtils.fromJsonString(js, JSMessageExample.class);
 
             //do someting
-            System.out.println(jsMsg.senderID + " " + jsMsg.userID + " " + jsMsg.data);
+            System.out.println("SenderID: " + jsMsg.senderID + "\nUserID: " + jsMsg.userID + "\nData: " + jsMsg.data);
 
             if (RedisProccess.getInstance().countMsgForEachUserID(jsMsg.userID) == false) {
                 return null;
             }
 
-            Long msgID = RedisUtil.getStringValue("ns:" + jsMsg.userID + ":msgcounter");
-            if (msgID == null) {
+            long msgID = RedisUtil.getStringValue("ns:" + jsMsg.userID + ":msgcounter");
+
+            if (msgID == 0) {
                 return null;
             }
 
@@ -105,16 +106,31 @@ public class ZAPIGetJson extends BaseApiHandler {
                 return null;
             }
 
-            if (RedisProccess.getInstance().countTotalRequest(msgID, jsMsg.userID) == false) {
+            if (RedisProccess.getInstance().countTotalRequest() == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().setListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().setListSenderID(msgID, jsMsg.senderID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().getAvgTimeProccess() == false) {
                 return null;
             }
             
             //return json
-            return "{result:1,code:0,msg:\"abcdef\"}";
+            return "{result:0,code:404,msg:\"Success\"}";
 
         } catch (Exception ex) {
             return "{result:0,code:404,msg:\"exception\"}";
         }
     }
-
 }
