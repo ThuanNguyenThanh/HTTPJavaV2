@@ -122,7 +122,7 @@ public class ZAPIGetJson extends BaseApiHandler {
                 return null;
             }
 
-            if (RedisProccess.getInstance().getAverageTimeProccess(timeProccess) == false) {
+            if (RedisProccess.getInstance().getAverageTimeProccess(msgID, jsMsg.userID, timeProccess) == false) {
                 return null;
             }
             //return json
@@ -132,5 +132,4 @@ public class ZAPIGetJson extends BaseApiHandler {
             return "{result:0,code:404,msg:\"exception\"}";
         }
     }
-
 }

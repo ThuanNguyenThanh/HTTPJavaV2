@@ -11,7 +11,7 @@ import http.api.handler.ZMsgDefine;
  *
  * @author root
  */
-public class RedisProccess{
+public class RedisProccess {
 
     private static final RedisProccess instance = new RedisProccess();
 
@@ -77,11 +77,15 @@ public class RedisProccess{
             return false;
         }
 
+        if (RedisUtil.Increase("ns:totalrequest:" + userID) == null) {
+            return false;
+        }
+
         if (RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT) == 1) {
-            if (RedisUtil.Increase(ZMsgDefine.TOTAL_REQUEST_SUCCESS) == null) {
+            if (RedisUtil.Increase("ns:totalrequestsuccess:" + userID) == null) {
                 return false;
             }
-        } else if (RedisUtil.Increase(ZMsgDefine.TOTAL_REQUEST_FAIL) == null) {
+        } else if (RedisUtil.Increase("ns:totalrequestfail:" + userID) == null) {
             return false;
         }
 
@@ -126,43 +130,44 @@ public class RedisProccess{
         return true;
     }
 
-    public boolean getAverageTimeProccess(Long timeProccess) {
-        Long numMsg = RedisUtil.getStringValue(ZMsgDefine.TOTAL_REQUEST);
-        
-        if (numMsg == null || numMsg == 0) {
+    public boolean getAverageTimeProccess(Long msgID, Long userID, Long timeProccess) {
+        //Long numMsg = RedisUtil.getStringValue(ZMsgDefine.TOTAL_REQUEST);
+
+        if (msgID == null || msgID == 0) {
             return false;
         }
 
-        long Avg = 0;
+        double avgTimeProccess = 0;
 
-        if (numMsg == 1) {
-            Avg = timeProccess;
-            if (RedisUtil.setStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess.toString()) == null) {
+        if (msgID == 1) {
+            avgTimeProccess = timeProccess;
+            
+            if (RedisUtil.setZStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess, userID.toString()) == null) {
                 return false;
             }
 
-            if (RedisUtil.setStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess.toString()) == null) {
+            if (RedisUtil.setZStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess, userID.toString()) == null) {
                 return false;
             }
         } else {
-            long TempTimeAvg = RedisUtil.getStringValue(ZMsgDefine.AVG_TIME_PROCCESS);
-            Avg = (timeProccess + (numMsg - 1) * TempTimeAvg) / numMsg;
+            Double TempTimeAvg = RedisUtil.getZDoubleValue(ZMsgDefine.AVG_TIME_PROCCESS, userID.toString());
+            avgTimeProccess = (timeProccess + (msgID - 1) * TempTimeAvg) / msgID;
         }
 
-        if (RedisUtil.setStringValue(ZMsgDefine.AVG_TIME_PROCCESS, timeProccess.toString()) == null) {
+        if (RedisUtil.setZStringValue(ZMsgDefine.AVG_TIME_PROCCESS, avgTimeProccess, userID.toString()) == null) {
             return false;
         }
 
-        if (RedisUtil.getStringValue(ZMsgDefine.MAX_TIME_PROCCESS) < timeProccess) {
-            if (RedisUtil.setStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess.toString()) == null) {
+        if (RedisUtil.getZDoubleValue(ZMsgDefine.MAX_TIME_PROCCESS, userID.toString()) < timeProccess) {
+            if (RedisUtil.setZStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess, userID.toString()) == null) {
                 return false;
             }
 
             return true;
         }
 
-        if (RedisUtil.getStringValue(ZMsgDefine.MIN_TIME_PROCCESS) > timeProccess) {
-            if (RedisUtil.setStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess.toString()) == null) {
+        if (RedisUtil.getZDoubleValue(ZMsgDefine.MIN_TIME_PROCCESS, userID.toString()) > timeProccess) {
+            if (RedisUtil.setZStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess, userID.toString()) == null) {
                 return false;
             }
 
