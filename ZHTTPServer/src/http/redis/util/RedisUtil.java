@@ -162,6 +162,32 @@ public class RedisUtil {
         }
     }
 
+    public static Long getZCardValue(String key) {
+        try {
+            if (key.isEmpty()) {
+                return null;
+            }
+
+            return getRdsStringCmdIns().zcard(key);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static List getZrange(String key) {
+        try {
+            if (key.isEmpty()) {
+                return null;
+            }
+
+            return getRdsStringCmdIns().zrange(key, 0, -1);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Long setSByteValue(String key, byte[] value) {
         try {
             if ((key == null) || (value == null)) {
