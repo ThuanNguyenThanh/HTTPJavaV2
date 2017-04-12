@@ -62,13 +62,14 @@ public class ZAPIGetJson extends BaseApiHandler {
             JSMessageExample jsMsg = GsonUtils.fromJsonString(js, JSMessageExample.class);
 
             //do someting
-            System.out.println(jsMsg.senderID + " " + jsMsg.userID + " " + jsMsg.data);
+            System.out.println("SenderID: " + jsMsg.senderID + "\nUserID " + jsMsg.userID + "\nData" + jsMsg.data);
 
             if (RedisProccess.getInstance().countMsgForEachUserID(jsMsg.userID) == false) {
                 return null;
             }
 
             Long msgID = RedisUtil.getStringValue("ns:" + jsMsg.userID + ":msgcounter");
+
             if (msgID == null) {
                 return null;
             }
@@ -108,7 +109,22 @@ public class ZAPIGetJson extends BaseApiHandler {
             if (RedisProccess.getInstance().countTotalRequest(msgID, jsMsg.userID) == false) {
                 return null;
             }
-            
+
+            if (RedisProccess.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().setListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().setListSenderID(msgID, jsMsg.senderID) == false) {
+                return null;
+            }
+
+            if (RedisProccess.getInstance().getAverageTimeProccess(timeProccess) == false) {
+                return null;
+            }
             //return json
             return "{result:1,code:0,msg:\"abcdef\"}";
 
