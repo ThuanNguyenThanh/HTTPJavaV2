@@ -13,4 +13,6 @@ public class JSMessageExample {
     public long senderID;
     public long userID;
     public String data;
+    
+    public long statiscal;
 }

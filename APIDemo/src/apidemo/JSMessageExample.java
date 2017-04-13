@@ -10,13 +10,9 @@ package apidemo;
  * @author root
  */
 public class JSMessageExample {
-//    public String version;
-//    public String data;
-//    public String signature;
-//    public int number;
-//    public int number2;
-    
-    public Long senderID;
-    public Long userID;
+    public long senderID;
+    public long userID;
     public String data;
+    
+    public long statiscal;
 }

@@ -40,7 +40,8 @@ public class ZAPIGetJson extends BaseApiHandler {
     public String doAction(HttpServletRequest req) {
         try {
             Timestamp timeStart = new Timestamp(System.currentTimeMillis());
-            System.out.println("----------------New connection--------------- \nTime start: " + timeStart.getTime());
+            System.out.println("----------------New connection--------------- "
+                    + "\nTime start: " + timeStart.getTime());
 
             if (req.getMethod().compareToIgnoreCase("POST") != 0) {
                 return "{result:0,code:405,msg:\"Wrong method. Must be POST\"}";
@@ -49,7 +50,7 @@ public class ZAPIGetJson extends BaseApiHandler {
             InputStream is = req.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            long result = RandomResult();
+            long resultProccess = RandomResult();
 
             byte buf[] = new byte[2048];
             int letti = 0;
@@ -84,9 +85,11 @@ public class ZAPIGetJson extends BaseApiHandler {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, result) == false) {
+            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, resultProccess) == false) {
                 return null;
             }
+            
+            System.out.println("Result: " + resultProccess);
 
             Timestamp timeEnd = new Timestamp(System.currentTimeMillis());
             System.out.println("Time end: " + timeEnd.getTime());
@@ -106,10 +109,6 @@ public class ZAPIGetJson extends BaseApiHandler {
                 return null;
             }
 
-            if (RedisProccess.getInstance().countTotalRequest() == false) {
-                return null;
-            }
-
             if (RedisProccess.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
                 return null;
             }
@@ -122,10 +121,6 @@ public class ZAPIGetJson extends BaseApiHandler {
                 return null;
             }
 
-            if (RedisProccess.getInstance().getAvgTimeProccess() == false) {
-                return null;
-            }
-            
             //return json
             return "{result:0,code:404,msg:\"Success\"}";
 

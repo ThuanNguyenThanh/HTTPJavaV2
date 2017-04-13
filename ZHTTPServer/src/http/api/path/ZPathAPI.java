@@ -14,5 +14,6 @@ public class ZPathAPI {
     public static final String API_GROUP_1         = "group1";
     public static final String API_EXAMPLE_1       = "example1";
     public static final String API_DATABASE        = "database";
+    public static final String API_STATISTICAL     = "statistical";
     public static final String API_GROUP_2         = "group2";
 }
