@@ -65,7 +65,7 @@ public class RedisProccess {
         if (RedisUtil.setZStringValue("ns:listuserid", (double) msgID, String.valueOf(userID)) == null) {
             return false;
         }
-        System.out.println("setUserID: " + userID);
+
         return true;
     }
 
@@ -82,49 +82,41 @@ public class RedisProccess {
 
         for (Object userID : listUsrID) {
             long numMsgID = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
+            long totalReqSucPerUsr = 0, totalReqFailPerUsr = 0;
 
             if (numMsgID <= 0) {
                 return false;
             }
-            long totalReqSucPerUsr = 0, totalReqFailPerUsr = 0;
 
             for (msgID = 1; msgID <= numMsgID; msgID++) {
+                long result = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT);
+                if (result < 0 || result > 1) {
+                    return false;
+                }
 
-                if (RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT) == 1) {
+                if (result == 1) {
                     totalReqSucPerUsr++;
                 } else {
                     totalReqFailPerUsr++;
                 }
             }
+
             totalReqPerUsr = totalReqSucPerUsr + totalReqFailPerUsr;
-            System.out.println("Number of request success per user " + userID + ": " + totalReqSucPerUsr);
 
-            System.out.println("Number of request fail per user " + userID + ": " + totalReqFailPerUsr);
+            System.out.println("----Request for userID: " + userID + "----");
+            System.out.println("Success: " + totalReqSucPerUsr);
+            System.out.println("Fail: " + totalReqFailPerUsr);
+            System.out.println("Total request: " + totalReqPerUsr);
 
-            System.out.println("Number of request per user " + userID + ": " + totalReqPerUsr);
             totalReqSuc += totalReqSucPerUsr;
             totalReqFail += totalReqFailPerUsr;
             totalReq += totalReqPerUsr;
         }
 
-        System.out.println("Number of request success: " + totalReqSuc);
-        System.out.println("Number request fail: " + totalReqFail);
-        System.out.println("Number request: " + totalReq);
-
-        return true;
-    }
-
-    public boolean testZrange() {
-        List l = RedisUtil.getZrange("ns:listuserid");
-
-        if (l.isEmpty()) {
-            return false;
-        }
-
-        //System.out.println("Noi dung list: " + l);
-        for (Object number : l) {
-            System.out.println("Noi dung list: " + number);
-        }
+        System.out.println("----Request for System----");
+        System.out.println("Success: " + totalReqSuc);
+        System.out.println("Fail: " + totalReqFail);
+        System.out.println("Total request: " + totalReq);
 
         return true;
     }
@@ -163,53 +155,56 @@ public class RedisProccess {
             return false;
         }
 
-        System.out.println("setSenderID: " + senderID);
         return true;
     }
 
-    public boolean getAverageTimeProccess(long msgID, long userID, long timeProccess) {
-        //Long numMsg = RedisUtil.getStringValue(ZMsgDefine.TOTAL_REQUEST);
-
-        if (msgID <= 0) {
+    public boolean getAvgTimeProccess() {
+        long minTimeProccess = 0, maxTimeProccess = 0, avgTimeProccess = 0;
+        List listuserID = RedisUtil.getZrange("ns:listuserid");
+        if (listuserID.isEmpty()) {
             return false;
         }
 
-        double avgTimeProccess;
+        for (Object userID : listuserID) {
+            long minTimeProPerUsr = 0, maxTimeProPerUsr = 0, avgTimeProPerUsr = 0;
+            long numMsgID = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
+            for (long msgID = 1; msgID <= numMsgID; msgID++) {
+                long timeProccess = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCCESS);
 
-        if (msgID == 1) {
-            avgTimeProccess = timeProccess;
+                if (timeProccess < 0) {
+                    return false;
+                }
 
-            if (RedisUtil.setZStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess, String.valueOf(userID)) == null) {
-                return false;
+                if (msgID == 1) {
+                    minTimeProPerUsr = timeProccess;
+                }
+                
+                if (minTimeProPerUsr > timeProccess) {
+                    minTimeProPerUsr = timeProccess;
+                }
+
+                if (maxTimeProPerUsr < timeProccess) {
+                    maxTimeProPerUsr = timeProccess;
+                }
+
+                avgTimeProPerUsr += timeProccess;
             }
+            avgTimeProPerUsr = avgTimeProPerUsr / numMsgID;
 
-            if (RedisUtil.setZStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess, String.valueOf(userID)) == null) {
-                return false;
-            }
-        } else {
-            Double TempTimeAvg = RedisUtil.getZDoubleValue(ZMsgDefine.AVG_TIME_PROCCESS, String.valueOf(userID));
-            avgTimeProccess = (timeProccess + (msgID - 1) * TempTimeAvg) / msgID;
+            System.out.println("----Time Proccess for userID: " + userID + "----");
+            System.out.println("Min: " + minTimeProPerUsr);
+            System.out.println("Max: " + maxTimeProPerUsr);
+            System.out.println("Avg: " + avgTimeProPerUsr);
+
+            minTimeProccess += minTimeProPerUsr;
+            maxTimeProccess += maxTimeProPerUsr;
+            avgTimeProccess += avgTimeProPerUsr;
         }
 
-        if (RedisUtil.setZStringValue(ZMsgDefine.AVG_TIME_PROCCESS, avgTimeProccess, String.valueOf(userID)) == null) {
-            return false;
-        }
-
-        if (RedisUtil.getZDoubleValue(ZMsgDefine.MAX_TIME_PROCCESS, String.valueOf(userID)) < timeProccess) {
-            if (RedisUtil.setZStringValue(ZMsgDefine.MAX_TIME_PROCCESS, timeProccess, String.valueOf(userID)) == null) {
-                return false;
-            }
-
-            return true;
-        }
-
-        if (RedisUtil.getZDoubleValue(ZMsgDefine.MIN_TIME_PROCCESS, String.valueOf(userID)) > timeProccess) {
-            if (RedisUtil.setZStringValue(ZMsgDefine.MIN_TIME_PROCCESS, timeProccess, String.valueOf(userID)) == null) {
-                return false;
-            }
-
-            return true;
-        }
+        System.out.println("----Time Proccess for System----");
+        System.out.println("Min: " + minTimeProccess/(listuserID.size()));
+        System.out.println("Max: " + maxTimeProccess/(listuserID.size()));
+        System.out.println("Avg: " + avgTimeProccess/(listuserID.size()));
 
         return true;
     }
