@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
-import http.redis.util.RedisProccess;
+import http.redis.util.RedisMessage;
 import http.redis.util.RedisUtil;
 import java.sql.Timestamp;
 import java.util.Random;
@@ -19,21 +19,24 @@ import java.util.Random;
  *
  * @author root
  */
-public class ZAPIGetJson extends BaseApiHandler {
+public class ZAPIMessage extends BaseApiHandler {
 
-    private static final ZAPIGetJson instance = new ZAPIGetJson();
-    //private static final RedisProccess RdsPro = new RedisProccess();
+    private static volatile ZAPIMessage instance;
 
-    private ZAPIGetJson() {
+    private ZAPIMessage() {
     }
 
-    public static ZAPIGetJson getInstance() {
+    public static ZAPIMessage getInstance() {
+        if (instance == null) {
+            instance = new ZAPIMessage();
+        }
+        
         return instance;
     }
 
     private long RandomResult() {
         Random rand = new Random();
-        return (long) rand.nextInt(2);
+        return (long) rand.nextInt(2); //random value 0 1
     }
 
     @Override
@@ -50,7 +53,7 @@ public class ZAPIGetJson extends BaseApiHandler {
             InputStream is = req.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            long resultProccess = RandomResult();
+            long resultProcess = RandomResult();
 
             byte buf[] = new byte[2048];
             int letti = 0;
@@ -65,7 +68,7 @@ public class ZAPIGetJson extends BaseApiHandler {
             //do someting
             System.out.println("SenderID: " + jsMsg.senderID + "\nUserID: " + jsMsg.userID + "\nData: " + jsMsg.data);
 
-            if (RedisProccess.getInstance().countMsgForEachUserID(jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().countMsgForEachUserID(jsMsg.userID) == false) {
                 return null;
             }
 
@@ -77,47 +80,47 @@ public class ZAPIGetJson extends BaseApiHandler {
 
             System.out.println("MessageID: " + msgID);
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID, jsMsg.senderID) == false) {
+            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID, jsMsg.senderID) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_DATA, jsMsg.data) == false) {
+            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_DATA, jsMsg.data) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, resultProccess) == false) {
+            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, resultProcess) == false) {
                 return null;
             }
-            
-            System.out.println("Result: " + resultProccess);
+
+            System.out.println("Result: " + resultProcess);
 
             Timestamp timeEnd = new Timestamp(System.currentTimeMillis());
             System.out.println("Time end: " + timeEnd.getTime());
 
-            long timeProccess = timeEnd.getTime() - timeStart.getTime();
-            System.out.println("Time proccess: " + timeProccess);
+            long timeProcess = timeEnd.getTime() - timeStart.getTime();
+            System.out.println("Time process: " + timeProcess);
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_START, timeStart.getTime()) == false) {
+            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_START, timeStart.getTime()) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCCESS, timeProccess) == false) {
+            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCESS, timeProcess) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setListUserID(msgID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().setListUserID(msgID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().setListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisProccess.getInstance().setListSenderID(msgID, jsMsg.senderID) == false) {
+            if (RedisMessage.getInstance().setListSenderID(msgID, jsMsg.senderID) == false) {
                 return null;
             }
 

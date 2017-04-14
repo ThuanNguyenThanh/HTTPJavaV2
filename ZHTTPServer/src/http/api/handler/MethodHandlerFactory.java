@@ -33,7 +33,7 @@ public class MethodHandlerFactory {
                     if (group.compareToIgnoreCase(ZPathAPI.API_GROUP_1) == 0) {
                         //http://abc.com.vn/api/group1/database
                         if (typeMessage.compareToIgnoreCase(ZPathAPI.API_DATABASE) == 0) {
-                            handler = ZAPIGetJson.getInstance();
+                            handler = ZAPIMessage.getInstance();
                         }
 
                         //http://abc.com.vn/api/group1/statiscal

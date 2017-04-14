@@ -14,5 +14,5 @@ public class JSMessageExample {
     public long userID;
     public String data;
     
-    public long statiscal;
+    public long userStatiscal;
 }

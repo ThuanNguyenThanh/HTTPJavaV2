@@ -30,7 +30,7 @@ import java.util.Scanner;
  *
  * @author root
  */
-public class APIDemo {
+public class APIMessage {
 
     public static String sendPost(String url, byte[] data) throws UnsupportedEncodingException, IOException, NoSuchAlgorithmException {
 //        logger.info("url: " + url);
@@ -49,23 +49,28 @@ public class APIDemo {
     }
 
     public static void main(String[] args) throws InterruptedException, Exception {
-        JSMessageExample js = new JSMessageExample();
-        Scanner Snr = new Scanner(System.in);
+        try {
+            JSMessageExample js = new JSMessageExample();
+            Scanner Snr = new Scanner(System.in);
 
-        System.out.println("Enter SenderID:");
-        js.senderID = Snr.nextLong();
+            System.out.println("Enter SenderID:");
+            js.senderID = Snr.nextLong();
 
-        System.out.println("Enter UserID:");
-        js.userID = Snr.nextLong();
+            System.out.println("Enter UserID:");
+            js.userID = Snr.nextLong();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Enter Data: ");
-        js.data = in.readLine();
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Enter Data: ");
+            js.data = in.readLine();
 
-        String strJSON = ObjectToString(js);
+            String strJSON = ObjectToString(js);
 
-        String res = sendPostJson("http://localhost:9494/api/group1/database", strJSON, 10000);
-        System.out.println("Result: " + res);
+            String res = sendPostJson("http://localhost:9494/api/group1/database", strJSON, 10000);
+            System.out.println("Result: " + res);
+
+        } catch (Exception ex) {
+            System.out.println("Incorrect type data");
+        }
     }
 
     public static String md5String(String str) {

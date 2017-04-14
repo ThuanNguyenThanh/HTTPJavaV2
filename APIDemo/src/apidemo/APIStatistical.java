@@ -48,17 +48,21 @@ public class APIStatistical {
     }
 
     public static void main(String[] args) throws InterruptedException, Exception {
-        JSMessageExample js = new JSMessageExample();
-        Scanner Snr = new Scanner(System.in);
+        try {
+            JSMessageExample js = new JSMessageExample();
 
-        System.out.println("Enter UserID:");
-        js.statiscal = Snr.nextLong();
-        String strJSON = ObjectToString(js);
+            Scanner Snr = new Scanner(System.in);
 
-        //statiscal
-        String res = sendPostJson("http://localhost:9494/api/group1/statistical", strJSON, 10000);
-        System.out.println("Result: " + res);
+            System.out.println("Enter UserID:");
+            js.userStatiscal = Snr.nextLong();
+            String strJSON = ObjectToString(js);
 
+            //statiscal
+            String res = sendPostJson("http://localhost:9494/api/group1/statistical", strJSON, 10000);
+            System.out.println("Result: " + res);
+        } catch (Exception ex) {
+            System.out.println("Incorrect type data");
+        }
     }
 
     public static String md5String(String str) {
@@ -124,4 +128,3 @@ public class APIStatistical {
         return gson.fromJson(js, JSMessageExample.class);
     }
 }
-
