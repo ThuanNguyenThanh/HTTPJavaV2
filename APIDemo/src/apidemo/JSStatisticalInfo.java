@@ -10,11 +10,11 @@ package apidemo;
  * @author root
  */
 public class JSStatisticalInfo {
-    private long userID;
+    private long userStatistical;
     private long optionStatistical;
 
     public void setUserID(long userID) {
-        this.userID = userID;
+        this.userStatistical = userID;
     }
 
     public void setOptionStatistical(long optionStatistical) {

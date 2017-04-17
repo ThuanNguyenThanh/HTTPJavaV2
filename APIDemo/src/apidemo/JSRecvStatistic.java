@@ -13,15 +13,15 @@ package apidemo;
 
 public class JSRecvStatistic {
 
-    private String success;
-    private String fail;
-    private String totalrequest;
+    public String success;
+    public String fail;
+    public String totalrequest;
 
-    private String listSenderIDOfUserID;
+    public String listSenderIDOfUserID;
 
-    private String minTimeProcess;
-    private String maxTimeProcess;
-    private String avgTimeProcess;
+    public String minTimeProcess;
+    public String maxTimeProcess;
+    public String avgTimeProcess;
 
     public String getSuccess() {
         return success;

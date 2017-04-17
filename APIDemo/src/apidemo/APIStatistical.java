@@ -54,8 +54,8 @@ public class APIStatistical {
             Scanner Snr = new Scanner(System.in);
 
             System.out.println("Enter UserID:");
-            long usrStatistical = Snr.nextLong();
-            js.setUserID(usrStatistical);
+            long userStatistical = Snr.nextLong();
+            js.setUserID(userStatistical);
 
             System.out.println("1. Total request for userID"
                     + "\n2. Total request for system"
@@ -74,31 +74,26 @@ public class APIStatistical {
 
             JSRecvStatistic obj = StringToObject(res);
 
-            //switch (optionStatistical.intValue()) {
-                if(optionStatistical == 1) {
-                    System.out.println("Request for userID: " + usrStatistical);
-                    System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
-                   
-                }
+            if (optionStatistical == 1) {
+                System.out.println("Request for userID: " + userStatistical);
+                System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
 
-                if(optionStatistical == 2) {
-                    System.out.println("Request for system");
-                    System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
-                    
-                }
+            }
 
-                if(optionStatistical == 3) {
-                    System.out.println("List senderid: " + obj.getListSenderIDOfUserID());
-                }
+            if (optionStatistical == 2) {
+                System.out.println("Request for system");
+                System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
+            }
 
-                if(optionStatistical == 4) {
-                    System.out.println("Time process for userID: " + usrStatistical);
-                    System.out.println("Min: " + obj.getMinTimeProcess() + "\nMax: " + obj.getMaxTimeProcess() + "\nAvg: " + obj.getAvgTimeProcess());
-                    
-                }
+            if (optionStatistical == 3) {
+                System.out.println("List senderid: " + obj.getListSenderIDOfUserID());
+            }
 
-
-            //}
+            if (optionStatistical == 4) {
+                System.out.println("Time process for userID: " + userStatistical);
+                System.out.println("Min: " + obj.getMinTimeProcess() + "\nMax: " + obj.getMaxTimeProcess() + "\nAvg: " + obj.getAvgTimeProcess());
+            }
+            
         } catch (Exception ex) {
             System.out.println("Incorrect type data" + ex);
         }

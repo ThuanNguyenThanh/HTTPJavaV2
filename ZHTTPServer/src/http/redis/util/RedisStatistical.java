@@ -6,7 +6,6 @@
 package http.redis.util;
 
 import http.api.handler.ZMsgDefine;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
