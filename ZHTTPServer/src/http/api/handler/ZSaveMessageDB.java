@@ -30,7 +30,7 @@ public class ZSaveMessageDB extends BaseApiHandler {
         if (instance == null) {
             instance = new ZSaveMessageDB();
         }
-        
+
         return instance;
     }
 
@@ -66,13 +66,7 @@ public class ZSaveMessageDB extends BaseApiHandler {
             JSRecvMessage jsMsg = GsonUtils.fromJsonString(js, JSRecvMessage.class);
 
             //do someting
-            System.out.println("SenderID: " + jsMsg.senderID + "\nUserID: " + jsMsg.userID + "\nData: " + jsMsg.data);
-
-            if (RedisMessage.getInstance().countMsgForEachUserID(jsMsg.userID) == false) {
-                return null;
-            }
-
-            long msgID = RedisUtil.getStringValue("ns:" + jsMsg.userID + ":msgcounter");
+            long msgID = RedisMessage.getInstance().countMsgForEachUserID(jsMsg.userID);
 
             if (msgID == 0) {
                 return null;
@@ -80,18 +74,19 @@ public class ZSaveMessageDB extends BaseApiHandler {
 
             System.out.println("MessageID: " + msgID);
 
-            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID, jsMsg.senderID) == false) {
+            if (RedisMessage.getInstance().addMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID, jsMsg.senderID) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_DATA, jsMsg.data) == false) {
+            if (RedisMessage.getInstance().addMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_DATA, jsMsg.data) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, resultProcess) == false) {
+            if (RedisMessage.getInstance().addMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT, resultProcess) == false) {
                 return null;
             }
 
+            System.out.println("SenderID: " + jsMsg.senderID + "\nUserID: " + jsMsg.userID + "\nData: " + jsMsg.data);
             System.out.println("Result: " + resultProcess);
 
             Timestamp timeEnd = new Timestamp(System.currentTimeMillis());
@@ -100,27 +95,27 @@ public class ZSaveMessageDB extends BaseApiHandler {
             long timeProcess = timeEnd.getTime() - timeStart.getTime();
             System.out.println("Time process: " + timeProcess);
 
-            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_START, timeStart.getTime()) == false) {
+            if (RedisMessage.getInstance().addMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_START, timeStart.getTime()) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCESS, timeProcess) == false) {
+            if (RedisMessage.getInstance().addMsgInfo(msgID, jsMsg.userID, ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCESS, timeProcess) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setListUserID(msgID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().addListUserID(msgID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().addListUserIDOfSenderID(jsMsg.senderID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
+            if (RedisMessage.getInstance().addListMsgID(msgID, jsMsg.senderID, jsMsg.userID) == false) {
                 return null;
             }
 
-            if (RedisMessage.getInstance().setListSenderID(msgID, jsMsg.senderID) == false) {
+            if (RedisMessage.getInstance().addListSenderID(msgID, jsMsg.senderID) == false) {
                 return null;
             }
 

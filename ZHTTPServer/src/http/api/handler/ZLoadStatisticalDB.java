@@ -54,41 +54,71 @@ public class ZLoadStatisticalDB extends BaseApiHandler {
 
             //do someting
             if (jsMsg.optionStatistical == 1) {
-                if (RedisStatistical.getInstance().countTotalReqPerUsr(jsMsg.userStatistical) == false) {
-                    return null;
+                ResultAPI reqForUsr = RedisStatistical.getInstance().countTotalReqPerUsr(jsMsg.userStatistical);
+
+                if (reqForUsr.result != 1) {
+                    return "{\"result\":" + reqForUsr.result + ","
+                            + "\"code\":" + reqForUsr.code + ", "
+                            + "\"success\":" + reqForUsr.success + ", "
+                            + "\"fail\":" + reqForUsr.fail + ", "
+                            + "\"totalRequest\":" + reqForUsr.totalrequest + "}";
                 }
 
-                return "{\"success\":" + ZMsgDefine.totalReqSucPerUsr + ", "
-                        + "\"fail\":" + ZMsgDefine.totalReqFailPerUsr + ", "
-                        + "\"totalrequest\":" + ZMsgDefine.totalReqPerUsr + "}";
+                return "{\"result\":" + reqForUsr.result + ","
+                        + "\"code\":" + reqForUsr.code + ", "
+                        + "\"success\":" + reqForUsr.success + ", "
+                        + "\"fail\":" + reqForUsr.fail + ", "
+                        + "\"totalRequest\":" + reqForUsr.totalrequest + "}";
             }
 
             if (jsMsg.optionStatistical == 2) {
-                if (RedisStatistical.getInstance().countTotalRequest() == false) {
-                    return null;
+                ResultAPI reqForSystem = RedisStatistical.getInstance().countTotalRequest();
+
+                if (reqForSystem.result != 1) {
+                    return "{\"result\":" + reqForSystem.result + ","
+                            + "\"code\":" + reqForSystem.code + ", "
+                            + "\"success\":" + reqForSystem.success + ", "
+                            + "\"fail\":" + reqForSystem.fail + ", "
+                            + "\"totalRequest\":" + reqForSystem.totalrequest + "}";
                 }
 
-                return "{\"success\":" + ZMsgDefine.totalReqSuc + ", "
-                        + "\"fail\":" + ZMsgDefine.totalReqFail + ", "
-                        + "\"totalrequest\":" + ZMsgDefine.totalReq + "}";
+                return "{\"result\":" + reqForSystem.result + ","
+                        + "\"code\":" + reqForSystem.code + ", "
+                        + "\"success\":" + reqForSystem.success + ", "
+                        + "\"fail\":" + reqForSystem.fail + ", "
+                        + "\"totalRequest\":" + reqForSystem.totalrequest + "}";
             }
 
             if (jsMsg.optionStatistical == 3) {
-                if (RedisStatistical.getInstance().getListSenderIDOfUserID(jsMsg.userStatistical) == false) {
-                    return null;
+                ResultAPI listSenderIDOfUserID = RedisStatistical.getInstance().getListSenderIDOfUserID(jsMsg.userStatistical);
+
+                if (listSenderIDOfUserID.result != 1) {
+                    return "{\"result\":" + listSenderIDOfUserID.result + ","
+                            + "\"code\":" + listSenderIDOfUserID.code + ", "
+                            + "\"listSenderID\":" + listSenderIDOfUserID.listSenderID + "}";
                 }
-                
-                return "{\"listSenderIDOfUserID\":" + "\"" + ZMsgDefine.listSenderID + "\"}";
+
+                return "{\"result\":" + listSenderIDOfUserID.result + ","
+                        + "\"code\":" + listSenderIDOfUserID.code + ", "
+                        + "\"listSenderID\":" + listSenderIDOfUserID.listSenderID + "}";
             }
 
             if (jsMsg.optionStatistical == 4) {
-                if (RedisStatistical.getInstance().getAvgTimeProcess(jsMsg.userStatistical) == false) {
-                    return null;
+                ResultAPI TimeProcess = RedisStatistical.getInstance().getAvgTimeProcess(jsMsg.userStatistical);
+
+                if (TimeProcess.result != 1) {
+                    return "{\"result\":" + TimeProcess.result + ","
+                            + "\"code\":" + TimeProcess.code + ", "
+                            + "\"avgTimeProccess\":" + TimeProcess.avgTimeProPerUsr + ", "
+                            + "\"minTimeProccess\":" + TimeProcess.minTimeProPerUsr + ", "
+                            + "\"maxTimeProccess\":" + TimeProcess.maxTimeProPerUsr + "}";
                 }
 
-                return "{\"minTimeProcess\":" + ZMsgDefine.minTimeProPerUsr + ", "
-                        + "\"maxTimeProcess\":" + ZMsgDefine.maxTimeProPerUsr + ", "
-                        + "\"avgTimeProcess\":" + ZMsgDefine.avgTimeProPerUsr + "}";
+                return "{\"result\":" + TimeProcess.result + ","
+                        + "\"code\":" + TimeProcess.code + ", "
+                        + "\"avgTimeProccess\":" + TimeProcess.avgTimeProPerUsr + ", "
+                        + "\"minTimeProccess\":" + TimeProcess.minTimeProPerUsr + ", "
+                        + "\"maxTimeProccess\":" + TimeProcess.maxTimeProPerUsr + "}";
             }
 
             //return json

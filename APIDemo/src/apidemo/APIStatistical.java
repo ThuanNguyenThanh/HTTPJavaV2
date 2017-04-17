@@ -76,22 +76,25 @@ public class APIStatistical {
 
             if (optionStatistical == 1) {
                 System.out.println("Request for userID: " + userStatistical);
-                System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
-
+                System.out.println("Result: " + obj.result + "\nCode: " + obj.code 
+                        + "\nSuccess: " + obj.success + "\nFail: " + obj.fail + "\nTotal: " + obj.totalRequest);
             }
 
             if (optionStatistical == 2) {
                 System.out.println("Request for system");
-                System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
+                System.out.println("Result: " + obj.result + "\nCode: " + obj.code 
+                        + "\nSuccess: " + obj.success + "\nFail: " + obj.fail + "\nTotal: " + obj.totalRequest);
             }
 
             if (optionStatistical == 3) {
-                System.out.println("List senderid: " + obj.getListSenderIDOfUserID());
+                System.out.println("Result: " + obj.result + "\nCode: " + obj.code 
+                        + "\nList senderid: " + obj.listSenderID);
             }
 
             if (optionStatistical == 4) {
                 System.out.println("Time process for userID: " + userStatistical);
-                System.out.println("Min: " + obj.getMinTimeProcess() + "\nMax: " + obj.getMaxTimeProcess() + "\nAvg: " + obj.getAvgTimeProcess());
+                System.out.println("Result: " + obj.result + "\nCode: " + obj.code  
+                        + "\nMin: " + obj.minTimeProcess + "\nMax: " + obj.maxTimeProcess + "\nAvg: " + obj.avgTimeProcess);
             }
             
         } catch (Exception ex) {

@@ -122,17 +122,17 @@ public class RedisUtil {
         }
     }
 
-    public static Long getStringValue(String key) {
+    public static long getStringValue(String key) {
         try {
             if (key.isEmpty()) {
-                return null;
+                return 0;
             }
 
             String s = getRdsStringCmdIns().get(key);
             return tryParseLong(s);
 
         } catch (Exception e) {
-            return null;
+            return 0;
         }
     }
 
@@ -255,16 +255,16 @@ public class RedisUtil {
         }
     }
 
-    public static Long getHashLongValue(String hash, String key) {
+    public static long getHashLongValue(String hash, String key) {
         try {
             if (hash.isEmpty() || key.isEmpty()) {
-                return null;
+                return 0;
             }
             String s = getRdsStringCmdIns().hget(hash, key);
             return tryParseLong(s);
 
         } catch (Exception e) {
-            return null;
+            return 0;
         }
     }
 
@@ -283,14 +283,14 @@ public class RedisUtil {
         }
     }
 
-    public static Long tryParseLong(String text) {
+    public static long tryParseLong(String text) {
         try {
             if (text == null) {
-                return null;
+                return 0;
             }
             return Long.parseLong(text);
         } catch (NumberFormatException ex) {
-            return null;
+            return 0;
         }
     }
 

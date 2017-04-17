@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package http.redis.util;
+
 /**
  *
  * @author root
@@ -16,19 +17,33 @@ public class RedisMessage {
         return RedisMessage.instance;
     }
 
-    public boolean countMsgForEachUserID(long userID) {
+    public long countMsgForEachUserID(long userID) {
         if (userID <= 0) {
+            return 0;
+        }
+
+        Long numMsg = RedisUtil.Increase("ns:" + userID + ":msgcounter");
+
+        if (numMsg == 0) {
+            return 0;
+        }
+
+        return numMsg;
+    }
+
+    public boolean addSetRds(String strKey, String strMember) {
+        if (strKey.isEmpty() || strMember.isEmpty()) {
             return false;
         }
 
-        if (RedisUtil.Increase("ns:" + userID + ":msgcounter") == null) {
+        if (RedisUtil.setSStringValue(strKey, strMember) == null) {
             return false;
         }
 
         return true;
     }
 
-    public boolean setMsgInfo(long msgID, long userID, String field, String value) {
+    public boolean addMsgInfo(long msgID, long userID, String field, String value) {
         if (msgID <= 0 || userID <= 0 || field == null || value == null) {
             return false;
         }
@@ -40,7 +55,7 @@ public class RedisMessage {
         return true;
     }
 
-    public boolean setMsgInfo(long msgID, long userID, String field, long value) {
+    public boolean addMsgInfo(long msgID, long userID, String field, long value) {
         if (msgID <= 0 || userID <= 0 || field == null) {
             return false;
         }
@@ -53,7 +68,7 @@ public class RedisMessage {
     }
 
     //list userid: zrange ns:listuserid 0 -1
-    public boolean setListUserID(long msgID, long userID) {
+    public boolean addListUserID(long msgID, long userID) {
         if (msgID <= 0 || userID <= 0) {
             return false;
         }
@@ -66,31 +81,23 @@ public class RedisMessage {
     }
 
     //Them de tang toc do neu he thong du tai nguyen
-    public boolean setListUserIDOfSenderID(long senderID, long userID) {
+    public boolean addListUserIDOfSenderID(long senderID, long userID) {
         if (senderID <= 0 || userID <= 0) {
             return false;
         }
 
-        if (RedisUtil.setSStringValue("ns:listuserid:" + senderID + ":list", String.valueOf(userID)) == null) {
-            return false;
-        }
-
-        return true;
+        return addSetRds("ns:listuserid:" + senderID + ":list", String.valueOf(userID));
     }
 
-    public boolean setListMsgID(long msgID, long senderID, long userID) {
+    public boolean addListMsgID(long msgID, long senderID, long userID) {
         if (msgID <= 0 || senderID <= 0 || userID <= 0) {
             return false;
         }
 
-        if (RedisUtil.setSStringValue("ns:listmsgid:" + senderID + ":" + userID + ":list", String.valueOf(msgID)) == null) {
-            return false;
-        }
-
-        return true;
+        return addSetRds("ns:listmsgid:" + senderID + ":" + userID + ":list", String.valueOf(msgID));
     }
 
-    public boolean setListSenderID(long msgID, long senderID) {
+    public boolean addListSenderID(long msgID, long senderID) {
         if (msgID <= 0 || senderID <= 0) {
             return false;
         }
@@ -100,5 +107,5 @@ public class RedisMessage {
         }
 
         return true;
-    } 
+    }
 }

@@ -5,8 +5,9 @@
  */
 package http.redis.util;
 
+import http.api.handler.ResultAPI;
 import http.api.handler.ZMsgDefine;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,126 +26,178 @@ public class RedisStatistical {
         return instance;
     }
 
-    public boolean countTotalReqPerUsr(Long userID) {
+    public ResultAPI countTotalReqPerUsr(Long userID) {
+        ResultAPI result = new ResultAPI();
+
         if (userID <= 0) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
+
+        int totalReqSucPerUsr = 0;
+        int totalReqFailPerUsr = 0;
+        int totalReqPerUsr = 0;
 
         long numMsgID = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
 
         if (numMsgID <= 0) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
 
-        ZMsgDefine.totalReqFailPerUsr = 0;
-        ZMsgDefine.totalReqSucPerUsr = 0;
-        ZMsgDefine.totalReqPerUsr = 0;
-
-        for (long msgID = 1; msgID <= numMsgID; msgID++) {
-            long result = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT);
-            if (result < 0 || result > 1) {
-                return false;
+        for (int msgID = 1; msgID <= numMsgID; msgID++) {
+            long resultRequest = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT);
+            if (resultRequest < 0 || resultRequest > 1) {
+                result.result = 0;
+                result.code = -100;
+                return result;
             }
 
-            if (result == 1) {
-                ZMsgDefine.totalReqSucPerUsr++;
+            if (resultRequest == 1) {
+                totalReqSucPerUsr++;
             } else {
-                ZMsgDefine.totalReqFailPerUsr++;
+                totalReqFailPerUsr++;
             }
         }
 
-        ZMsgDefine.totalReqPerUsr = ZMsgDefine.totalReqSucPerUsr + ZMsgDefine.totalReqFailPerUsr;
-        return true;
+        totalReqPerUsr = totalReqSucPerUsr + totalReqFailPerUsr;
+
+        result.result = 1;
+        result.code = 200;
+        result.success = totalReqSucPerUsr;
+        result.fail = totalReqFailPerUsr;
+        result.totalrequest = totalReqPerUsr;
+        return result;
+
     }
 
-    public boolean countTotalRequest() {
+    public ResultAPI countTotalRequest() {
+
+        ResultAPI result = new ResultAPI();
+
         List listUsrID = RedisUtil.getZrange("ns:listuserid");
-
         if (listUsrID.isEmpty()) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
 
-        ZMsgDefine.totalReqSuc = 0;
-        ZMsgDefine.totalReqFail = 0;
-        ZMsgDefine.totalReq = 0;
+        int totalReq = 0;
+        int totalReqSuc = 0;
+        int totalReqFail = 0;
 
-        Iterator<String> userID = listUsrID.iterator();
+        for (int index = 0; index < listUsrID.size(); index++) {
+            long numMsgID = RedisUtil.getStringValue("ns:" + listUsrID.get(index) + ":msgcounter");
 
-        while (userID.hasNext()) {
-            countTotalReqPerUsr(Long.valueOf(userID.next()));
+            if (numMsgID <= 0) {
+                result.result = 0;
+                result.code = -99;
+                return result;
+            }
 
-            ZMsgDefine.totalReqSuc += ZMsgDefine.totalReqSucPerUsr;
-            ZMsgDefine.totalReqFail += ZMsgDefine.totalReqFailPerUsr;
-            ZMsgDefine.totalReq += ZMsgDefine.totalReqPerUsr;
+            for (int msgID = 1; msgID <= numMsgID; msgID++) {
+                long resultProcess = RedisUtil.getHashLongValue("ns:" + listUsrID.get(index) + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_RESULT);
+                if (resultProcess < 0 || resultProcess > 1) {
+                    result.result = 0;
+                    result.code = -99;
+                    return result;
+                }
+
+                if (resultProcess == 1) {
+                    totalReqSuc++;
+                } else {
+                    totalReqFail++;
+                }
+            }
         }
 
-        return true;
+        totalReq += totalReqSuc + totalReqFail;
+
+        result.result = 1;
+        result.code = 200;
+        result.success = totalReqSuc;
+        result.fail = totalReqFail;
+        result.totalrequest = totalReq;
+        return result;
+
     }
 
-    public boolean getListSenderIDOfUserID(Long userID) {
+    public ResultAPI getListSenderIDOfUserID(Long userID) {
+        ResultAPI result = new ResultAPI();
         if (userID <= 0) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
 
+        List listSenderID = new ArrayList();
         long numMsgID = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
 
         if (numMsgID <= 0) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
-
-        
 
         for (long msgID = 1; msgID <= numMsgID; msgID++) {
             long senderID = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID);
             if (senderID <= 0) {
-                return false;
+                result.result = 0;
+                result.code = -100;
+                return result;
             }
 
-            if (!ZMsgDefine.listSenderID.contains(senderID)) {
-                ZMsgDefine.listSenderID.add(senderID);
+            if (!listSenderID.contains(senderID)) {
+                listSenderID.add(senderID);
             }
         }
+        result.result = 1;
+        result.code = 200;
+        result.listSenderID = listSenderID;
+        return result;
 
-        System.out.println("List senderID of userID " + userID + ": " + ZMsgDefine.listSenderID);
-
-        return true;
     }
 
-    public boolean getAvgTimeProcess(long userID) {
+    public ResultAPI getAvgTimeProcess(long userID) {
+        ResultAPI result = new ResultAPI();
         if (userID <= 0) {
-            return false;
+            result.result = 0;
+            result.code = -100;
+            return result;
         }
 
         long numMsgID = RedisUtil.getStringValue("ns:" + userID + ":msgcounter");
-
-        ZMsgDefine.minTimeProPerUsr = 0;
-        ZMsgDefine.maxTimeProPerUsr = 0;
-        ZMsgDefine.avgTimeProPerUsr = 0;
 
         for (long msgID = 1; msgID <= numMsgID; msgID++) {
             long timeProcess = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_TIME_PROCESS);
 
             if (timeProcess < 0) {
-                return false;
+                result.result = 0;
+                result.code = -100;
+                return result;
             }
 
             if (msgID == 1) {
-                ZMsgDefine.minTimeProPerUsr = timeProcess;
+                result.minTimeProPerUsr = timeProcess;
             }
 
-            if (ZMsgDefine.minTimeProPerUsr > timeProcess) {
-                ZMsgDefine.minTimeProPerUsr = timeProcess;
+            if (result.minTimeProPerUsr > timeProcess) {
+                result.minTimeProPerUsr = timeProcess;
             }
 
-            if (ZMsgDefine.maxTimeProPerUsr < timeProcess) {
-                ZMsgDefine.maxTimeProPerUsr = timeProcess;
+            if (result.maxTimeProPerUsr < timeProcess) {
+                result.maxTimeProPerUsr = timeProcess;
             }
 
-            ZMsgDefine.avgTimeProPerUsr += timeProcess;
+            result.avgTimeProPerUsr += timeProcess;
         }
 
-        ZMsgDefine.avgTimeProPerUsr = ZMsgDefine.avgTimeProPerUsr / numMsgID;
+        result.avgTimeProPerUsr = result.avgTimeProPerUsr / numMsgID;
+        result.result = 1;
+        result.code = 200;
+        return result;
 
-        return true;
     }
 }

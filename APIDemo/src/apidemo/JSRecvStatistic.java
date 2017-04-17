@@ -12,43 +12,15 @@ package apidemo;
 // Parse Json is received from Server
 
 public class JSRecvStatistic {
-
+    public String result;
+    public String code;
     public String success;
     public String fail;
-    public String totalrequest;
-
-    public String listSenderIDOfUserID;
+    public String totalRequest;
+    
+    public String listSenderID;
 
     public String minTimeProcess;
     public String maxTimeProcess;
     public String avgTimeProcess;
-
-    public String getSuccess() {
-        return success;
-    }
-
-    public String getFail() {
-        return fail;
-    }
-
-    public String getTotalRequest() {
-        return totalrequest;
-    }
-
-    public String getListSenderIDOfUserID() {
-        return listSenderIDOfUserID;
-    }
-
-    public String getMinTimeProcess() {
-        return minTimeProcess;
-    }
-
-    public String getMaxTimeProcess() {
-        return maxTimeProcess;
-    }
-
-    public String getAvgTimeProcess() {
-        return avgTimeProcess;
-    }
-
 }
