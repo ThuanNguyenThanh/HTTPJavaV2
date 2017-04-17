@@ -28,17 +28,18 @@ public class MethodHandlerFactory {
 
                     if (pathAPI.size() >= 3) {
                         typeMessage = pathAPI.get(2);
+                        
                     }
 
                     if (group.compareToIgnoreCase(ZPathAPI.API_GROUP_1) == 0) {
                         //http://abc.com.vn/api/group1/database
                         if (typeMessage.compareToIgnoreCase(ZPathAPI.API_DATABASE) == 0) {
-                            handler = ZAPIMessage.getInstance();
+                            handler = ZSaveMessageDB.getInstance();
                         }
 
                         //http://abc.com.vn/api/group1/statiscal
                         if (typeMessage.compareToIgnoreCase(ZPathAPI.API_STATISTICAL) == 0) {
-                            handler = ZAPIStatistical.getInstance();
+                            handler = ZLoadStatisticalDB.getInstance();
                         }
 
                         //http://abc.com.vn/api/group2/example2

@@ -9,10 +9,7 @@ package http.api.handler;
  *
  * @author root
  */
-public class JSMessageExample {
-    public long senderID;
-    public long userID;
-    public String data;
-    
-    public long userStatiscal;
+public class JSRecvStatistical {
+    public long userStatistical;
+    public long optionStatistical;
 }

@@ -19,16 +19,16 @@ import java.util.Random;
  *
  * @author root
  */
-public class ZAPIMessage extends BaseApiHandler {
+public class ZSaveMessageDB extends BaseApiHandler {
 
-    private static volatile ZAPIMessage instance;
+    private static volatile ZSaveMessageDB instance;
 
-    private ZAPIMessage() {
+    private ZSaveMessageDB() {
     }
 
-    public static ZAPIMessage getInstance() {
+    public static ZSaveMessageDB getInstance() {
         if (instance == null) {
-            instance = new ZAPIMessage();
+            instance = new ZSaveMessageDB();
         }
         
         return instance;
@@ -63,7 +63,7 @@ public class ZAPIMessage extends BaseApiHandler {
             }
 
             String js = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-            JSMessageExample jsMsg = GsonUtils.fromJsonString(js, JSMessageExample.class);
+            JSRecvMessage jsMsg = GsonUtils.fromJsonString(js, JSRecvMessage.class);
 
             //do someting
             System.out.println("SenderID: " + jsMsg.senderID + "\nUserID: " + jsMsg.userID + "\nData: " + jsMsg.data);
@@ -125,7 +125,7 @@ public class ZAPIMessage extends BaseApiHandler {
             }
 
             //return json
-            return "{result:0,code:404,msg:\"Success\"}";
+            return "{result:0,code:200,msg:\"Success\"}";
 
         } catch (Exception ex) {
             return "{result:0,code:404,msg:\"exception\"}";

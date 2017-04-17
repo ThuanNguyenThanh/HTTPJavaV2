@@ -93,7 +93,7 @@ public class RedisStatistical {
             return false;
         }
 
-        List listSenderID = new ArrayList();
+        
 
         for (long msgID = 1; msgID <= numMsgID; msgID++) {
             long senderID = RedisUtil.getHashLongValue("ns:" + userID + ":" + msgID + ":info", ZMsgDefine.RDS_MSG_INFO_FIELD_SENDERID);
@@ -101,12 +101,12 @@ public class RedisStatistical {
                 return false;
             }
 
-            if (!listSenderID.contains(senderID)) {
-                listSenderID.add(senderID);
+            if (!ZMsgDefine.listSenderID.contains(senderID)) {
+                ZMsgDefine.listSenderID.add(senderID);
             }
         }
 
-        System.out.println("List senderID of userID " + userID + ": " + listSenderID);
+        System.out.println("List senderID of userID " + userID + ": " + ZMsgDefine.listSenderID);
 
         return true;
     }

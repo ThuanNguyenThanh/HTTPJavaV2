@@ -49,19 +49,58 @@ public class APIStatistical {
 
     public static void main(String[] args) throws InterruptedException, Exception {
         try {
-            JSMessageExample js = new JSMessageExample();
+            JSStatisticalInfo js = new JSStatisticalInfo();
 
             Scanner Snr = new Scanner(System.in);
 
             System.out.println("Enter UserID:");
-            js.userStatiscal = Snr.nextLong();
+            long usrStatistical = Snr.nextLong();
+            js.setUserID(usrStatistical);
+
+            System.out.println("1. Total request for userID"
+                    + "\n2. Total request for system"
+                    + "\n3. List SenderID of UserID"
+                    + "\n4. Avg time process for userID"
+                    + "\n0. Exit"
+                    + "\nEnter option statistical: ");
+
+            //Long optionStatistical;
+            long optionStatistical = Snr.nextLong();
+            js.setOptionStatistical(optionStatistical);
             String strJSON = ObjectToString(js);
 
             //statiscal
             String res = sendPostJson("http://localhost:9494/api/group1/statistical", strJSON, 10000);
-            System.out.println("Result: " + res);
+
+            JSRecvStatistic obj = StringToObject(res);
+
+            //switch (optionStatistical.intValue()) {
+                if(optionStatistical == 1) {
+                    System.out.println("Request for userID: " + usrStatistical);
+                    System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
+                   
+                }
+
+                if(optionStatistical == 2) {
+                    System.out.println("Request for system");
+                    System.out.println("Success: " + obj.getSuccess() + "\nFail: " + obj.getFail() + "\nTotal: " + obj.getTotalRequest());
+                    
+                }
+
+                if(optionStatistical == 3) {
+                    System.out.println("List senderid: " + obj.getListSenderIDOfUserID());
+                }
+
+                if(optionStatistical == 4) {
+                    System.out.println("Time process for userID: " + usrStatistical);
+                    System.out.println("Min: " + obj.getMinTimeProcess() + "\nMax: " + obj.getMaxTimeProcess() + "\nAvg: " + obj.getAvgTimeProcess());
+                    
+                }
+
+
+            //}
         } catch (Exception ex) {
-            System.out.println("Incorrect type data");
+            System.out.println("Incorrect type data" + ex);
         }
     }
 
@@ -121,10 +160,11 @@ public class APIStatistical {
         return gson.toJson(obj);
     }
 
-    public static JSMessageExample StringToObject(String js) {
+    public static JSRecvStatistic StringToObject(String js) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Gson gson = gsonBuilder.disableHtmlEscaping().create();
-        return gson.fromJson(js, JSMessageExample.class);
+
+        return gson.fromJson(js, JSRecvStatistic.class);
     }
 }

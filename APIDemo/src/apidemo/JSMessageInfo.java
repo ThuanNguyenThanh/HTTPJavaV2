@@ -9,10 +9,24 @@ package apidemo;
  *
  * @author root
  */
-public class JSMessageExample {
+public class JSMessageInfo {
     public long senderID;
     public long userID;
     public String data;
+
+    public void setSenderID(long senderID) {
+        this.senderID = senderID;
+    }
+
+    public void setUserID(long userID) {
+        this.userID = userID;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
     
-    public long userStatiscal;
+
+    
+    
 }

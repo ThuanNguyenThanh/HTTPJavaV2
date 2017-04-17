@@ -5,6 +5,9 @@
  */
 package http.api.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author root
@@ -37,4 +40,6 @@ public class ZMsgDefine {
     public static long minTimeProPerUsr;
     public static long maxTimeProPerUsr;
     public static long avgTimeProPerUsr;
+    
+    public static List listSenderID = new ArrayList();
 }

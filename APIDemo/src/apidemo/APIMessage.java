@@ -50,20 +50,20 @@ public class APIMessage {
 
     public static void main(String[] args) throws InterruptedException, Exception {
         try {
-            JSMessageExample js = new JSMessageExample();
+            JSMessageInfo jsMsg = new JSMessageInfo();
             Scanner Snr = new Scanner(System.in);
+            BufferedReader strIn = new BufferedReader(new InputStreamReader(System.in));
 
             System.out.println("Enter SenderID:");
-            js.senderID = Snr.nextLong();
+            jsMsg.setSenderID(Snr.nextLong());
 
             System.out.println("Enter UserID:");
-            js.userID = Snr.nextLong();
+            jsMsg.setUserID(Snr.nextLong());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("Enter Data: ");
-            js.data = in.readLine();
+            jsMsg.setData(strIn.readLine());
 
-            String strJSON = ObjectToString(js);
+            String strJSON = ObjectToString(jsMsg);
 
             String res = sendPostJson("http://localhost:9494/api/group1/database", strJSON, 10000);
             System.out.println("Result: " + res);
@@ -129,10 +129,10 @@ public class APIMessage {
         return gson.toJson(obj);
     }
 
-    public static JSMessageExample StringToObject(String js) {
+    public static JSMessageInfo StringToObject(String js) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Gson gson = gsonBuilder.disableHtmlEscaping().create();
-        return gson.fromJson(js, JSMessageExample.class);
+        return gson.fromJson(js, JSMessageInfo.class);
     }
 }
